@@ -85,13 +85,13 @@
                                     {% if query-results|not-empty %}
                                     {% for result in query-results|sort-by:servlet-context %}
 
-                                    <button type="button" class="list-group-item swaggerApiTrigger"
+                                    <div class="list-group-item swaggerApiTrigger"
                                             onClick="pointToSwaggerApiWithBackupRenderer('{{result.ui-api-path}}')">
 
                                         {{result.method}} {{result.servlet-context}}{{result.path}}
                                         <span class="badge">{{result.service-name}}</span>
                                         <span class="badge">Swagger {{result.swagger-version}}</span>
-                                    </button>
+                                    </div>
 
                                     {% endfor %}
                                     {% else %}
@@ -208,9 +208,10 @@
                 if (result["servlet-context"] === "/") {
                     result["servlet-context"] = "";
                 }
-                $("<button type=\"button\" class=\"list-group-item swaggerApiTrigger\" onClick=\"pointToSwaggerApiWithBackupRenderer('" +
-                        result["ui-api-path"] + "')\">" + result.method + " " + result["servlet-context"] + result.path + "" +
-                        "<span class=\"badge\">" + result["service-name"] + "</span></button>")
+                uiApiPath = result["ui-api-path"].replace("!", "");
+                $("<div class=\"list-group-item swaggerApiTrigger\" onClick=\"pointToSwaggerApiWithBackupRenderer('" +
+                        uiApiPath + "')\">" + result.method + " " + uiApiPath.split("#")[1].split("/")[1] + " " + result["servlet-context"] + result.path + "" +
+                        "<span class=\"badge\">" + result["service-name"] + "</span></div>")
                         .appendTo($('#queryResults'));
             });
         } else {

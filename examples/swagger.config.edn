@@ -15,7 +15,7 @@
                 ; For each service, Swagger Search will try each of the following paths.
                 ; The first one that returns a 200 with JSON will be assumed to be the swagger doc
                 ; If no suffix required, specify the empty string [""]
-                :possible-swagger-doc-suffix [ "/swagger/swagger.json" ""]
+                :possible-swagger-doc-suffix [ "/swagger/swagger.json" "/v2/api-docs" ""]
 
                 ; Same as possible-swagger-doc-suffix but for the Swagger UI.
                 ; To disable, comment out.
@@ -25,9 +25,12 @@
  ;; At least one service discovery mechanism must be specified.
 
  ;; A harcoded list of endpoints. To refresh the list, Swagger Search will need to be restarted
- ;:server-list  ["https://watson-api-explorer.mybluemix.net/listings/conversation-v1.json"
- ;               "http://devdocs.magento.com/swagger/schemas/latest-2.1.schema.json"
- ;               "https://api.apis.guru/v2/specs/googleapis.com/youtube/v3/swagger.json"]
+ :server-list  ["http://172.16.17.73:1751"
+                "http://172.16.22.29:1751"
+                "http://172.16.17.71:2999"
+                "http://pre.233xyx.com/apiserv"
+                "http://172.16.22.29:2999"
+                "https://api.apis.guru/v2/specs/googleapis.com/youtube/v3/swagger.json"]
 
  ;; A path to a local file or a url.
  ;; One line per service.

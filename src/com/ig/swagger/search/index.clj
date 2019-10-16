@@ -4,7 +4,9 @@
             clojure.string
             cheshire.generate
             medley.core)
-  (:import org.apache.lucene.analysis.en.EnglishAnalyzer))
+  (:import org.apache.lucene.analysis.en.EnglishAnalyzer
+           (java.net URLDecoder)
+           (java.util.stream Stream)))
 
 (def ^{:private true} lucene-keys
   (medley.core/map-vals #(assoc % :type "string")
@@ -88,7 +90,10 @@
     (clucy/search index query max-results :default-field :all-content :default-operator :and)))
 
 (defn search [state q]
-  (search* (:index @state) q 100))
+  (map #(let [ui-api-path (:ui-api-path %) ui-base-path (:ui-base-path %)]
+           (assoc  % :ui-api-path
+                     (URLDecoder/decode ui-api-path "utf-8")))
+       (search* (:index @state) q 100)))
 
 (defn get-swagger-services [state]
   (:details @state))
