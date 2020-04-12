@@ -6,11 +6,11 @@
 
     <link rel="icon" href="logo/swagger.png">
 
-    {% style "/bootstrap-3.3.6/css/bootstrap.min.css" %}
-    {% style "/css/swagger-search.css" %}
-    {% script "/js/jquery-1.12.3.min.js" %}
-    {% script "/js/list.min.js" %}
-    {% script "/bootstrap-3.3.6/js/bootstrap.min.js" %}
+    {% style "/swagger/bootstrap-3.3.6/css/bootstrap.min.css" %}
+    {% style "/swagger/css/swagger-search.css" %}
+    {% script "/swagger/js/jquery-1.12.3.min.js" %}
+    {% script "/swagger/js/list.min.js" %}
+    {% script "/swagger/bootstrap-3.3.6/js/bootstrap.min.js" %}
 </head>
 <body>
 <nav class="navbar navbar-default">
@@ -85,13 +85,13 @@
                                     {% if query-results|not-empty %}
                                     {% for result in query-results|sort-by:servlet-context %}
 
-                                    <div class="list-group-item swaggerApiTrigger"
+                                    <button class="list-group-item swaggerApiTrigger"
                                             onClick="pointToSwaggerApiWithBackupRenderer('{{result.ui-api-path}}')">
 
                                         {{result.method}} {{result.servlet-context}}{{result.path}}
                                         <span class="badge">{{result.service-name}}</span>
                                         <span class="badge">Swagger {{result.swagger-version}}</span>
-                                    </div>
+                                    </button>
 
                                     {% endfor %}
                                     {% else %}
@@ -140,6 +140,9 @@
 </div>
 
 <script>
+
+
+
     $("#renderingMessage").hide();
     hideUiFrame();
 
@@ -172,8 +175,12 @@
     });
 
     function pointToSwaggerApiWithBackupRenderer(url) {
-        $("#swaggerApiFrame").attr('src', url);
+        var urlAndApi = url.split("#/");
+        $("#swaggerApiFrame").attr('src', url.substring(0,url.lastIndexOf('/')));
         showUiFrame();
+<!--        $("#swaggerApiFrame").contents().find("body").append("<script>window.addEventListener(\"message\", event => {if (event.origin.startsWith(\"\")) {$(\"#operations-tag-\" + event.data)[0].scrollIntoView(true);}});<\/script>");-->
+
+        document.getElementById("swaggerApiFrame").contentWindow.postMessage(urlAndApi[1],"*");
     }
 
     function renderSpecFromProvidedUi(specPath) {
@@ -189,7 +196,7 @@
     function executeQuery(query) {
         if ($.trim(query).length) {
             $('#queryResults').empty();
-            $.getJSON("{{servlet-context}}/api/search?query=" + query, function (data) {
+            $.getJSON("{{servlet-context}}/swagger/api/search?query=" + query, function (data) {
                 populateQueryResults(data);
             }).error(function (data) {
                 $("<p>" + data.responseText + ".</p>").appendTo($('#queryResults'));
@@ -208,9 +215,9 @@
                 if (result["servlet-context"] === "/") {
                     result["servlet-context"] = "";
                 }
-                uiApiPath = result["ui-api-path"].replace("!", "");
+                var uiApiPath = result["ui-api-path"].replace("!", "");
                 $("<div class=\"list-group-item swaggerApiTrigger\" onClick=\"pointToSwaggerApiWithBackupRenderer('" +
-                        uiApiPath + "')\">" + result.method + " " + uiApiPath.split("#")[1].split("/")[1] + " " + result["servlet-context"] + result.path + "" +
+                        uiApiPath + "')\">" + result.method + " " + result["servlet-context"] + result.path + "" +
                         "<span class=\"badge\">" + result["service-name"] + "</span></div>")
                         .appendTo($('#queryResults'));
             });
